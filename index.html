@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Hồ Cá Ảo - Phiên Bản Thực</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 30%, #0088cc, #003366);
+    height: 100vh;
+  }
+
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .fish {
+    position: absolute;
+    width: 150px;
+    pointer-events: none;
+    will-change: transform, top, left;
+  }
+
+  .algae {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 20%;
+    pointer-events: none;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+  <canvas id="bubbles"></canvas>
+  <img src="1.png" class="fish" id="fish1">
+  <img src="2.gif" class="fish" id="fish2">
+  <img src="2.gif" class="fish" id="fish3">
+  <img src="2.gif" class="fish" id="fish4">
+  <img src="3.gif" class="fish" id="fish5">
+  <img src="1.png" class="fish" id="fish6">
+  <img src="2.gif" class="fish" id="fish4">
+  <img src="3.gif" class="fish" id="fish5">
+  <img src="1.png" class="fish" id="fish6">
+  <img src="4.gif" class="algae" alt="Rêu xanh">
+
+<script>
+const fishes = document.querySelectorAll('.fish');
+
+fishes.forEach(fish => {
+  fish.style.top = Math.random() * (window.innerHeight - 150) + 'px';
+  fish.style.left = Math.random() * window.innerWidth + 'px';
+  moveFish(fish);
+});
+
+function moveFish(fish) {
+  let direction = Math.random() > 0.5 ? 1 : -1; 
+  let speed = 0.5 + Math.random() * 1.5; 
+
+  function swim() {
+    let x = parseFloat(fish.style.left);
+    let y = parseFloat(fish.style.top);
+    
+    x += speed * direction;
+  
+    y += Math.sin(Date.now() / 500 + x / 50) * 0.5;
+
+    fish.style.left = x + 'px';
+    fish.style.top = y + 'px';
+    fish.style.transform = `scaleX(${direction})`;
+
+  
+    if (x > window.innerWidth) direction = -1;
+    if (x < -150) direction = 1;
+
+    requestAnimationFrame(swim);
+  }
+
+  swim();
+}
+const canvas = document.getElementById("bubbles");
+const ctx = canvas.getContext("2d");
+let bubbles = [];
+let width, height;
+
+function resize() {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+function createBubble() {
+  bubbles.push({
+    x: Math.random() * width,
+    y: height + 20,
+    r: Math.random() * 6 + 2,
+    speed: Math.random() * 1 + 0.5,
+    alpha: Math.random() * 0.5 + 0.3
+  });
+}
+
+function drawBubbles() {
+  ctx.clearRect(0, 0, width, height);
+  for (let b of bubbles) {
+    ctx.beginPath();ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${b.alpha})`;
+    ctx.fill();
+    b.y -= b.speed;
+  }
+  
+  bubbles = bubbles.filter(b => b.y > -10);
+
+  if (Math.random() < 0.1) createBubble();
+  requestAnimationFrame(drawBubbles);
+}
+drawBubbles();
+</script>
+</body>
+</html>
